@@ -1,0 +1,132 @@
+<html>
+  <head> 
+          <meta charset = "UTF-8">
+          <title>flask react</title>
+
+          <script src = "https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/react.min.js"></script>
+          <script src = "https://cdnjs.cloudflare.com/ajax/libs/react/0.13.2/JSXTransformer.js"></script>
+  </head>
+
+  <body>
+        <div id="mount-point">
+        </div>
+
+  </body>
+
+  <script type="text/jsx">
+
+          //not sure why these aren't needed
+//      var React = require('react');
+//      var ReactDOM = require('react-dom');
+
+
+//move this into a file called URLlist.js & export default TodoList       
+        class URLlist extends React.Component{
+
+                constructor(props){ //is called before constructor is mounted
+
+                        //calling parent constructor
+                        //props are arbitraty inputs
+                        super(props);
+
+                        this.state = {
+                                value: "", //DIFF
+                                items:[]
+                        }
+
+                        //binds functions to events that jsx components will handle
+                        this.addUrl = this.addUrl.bind(this);
+                        this.handleChange = this.handleChange.bind(this);
+                }
+
+
+                render(){  //examines this.props and this.state, returns a React element
+                        console.log(React.version);
+                        return (
+                                <div className="mount-point">
+                                   <div className="header">
+                                      <form onSubmit={this.addUrl} ref="urlForm">
+                                         <input placeholder="enter url" value={this.state.value} onChange={this.handleChange}>
+
+                                         {/* this is probably a bad way to implement state changing, but it works*/}
+
+                                         </input>
+
+                                         <button type="submit">add</button>
+                                      </form>
+                                   </div>
+                                         {/* passes list of urls as a prop into Items (sub-component?) class*/}
+                                   <Items entries={this.state.items} />
+                                </div>
+
+                        );
+
+                }
+
+                handleChange(e){ //handles state of text in jsx component
+                        //(event.target) references the html tag that has called function
+                        this.setState({value: event.target.value});
+                }
+
+                addUrl(e){ //called when form is submitted, adds url to list
+                        var itemArr = this.state.items;
+
+                        if(this.state.value != ""){
+                                
+                                //adds new element to state.items
+                                itemArr.unshift({
+                                        text: this.state.value,
+                                        key: Date.now() //why?
+                                });
+                                
+                                //re-renders array with updated state
+                                this.setState({
+                                        items: itemArr
+                                });
+
+                                //resets input field
+                                this.state.value = "";
+
+                        }
+
+                        console.log(itemArr);
+
+                        //prevents page from reloading upon submit
+                        e.preventDefault();
+                }
+        }
+
+        class Items extends React.Component{
+
+                constructor(props){
+                        super(props);
+
+                        this.createList = this.createList.bind(this);
+                }
+
+                createList(item){
+                        return <li key={item.key} >{item.text}</li>
+                }
+
+                render(){
+                        var myUrls = this.props.entries;
+                        
+                      //each list item converted into jsx 
+                        var UrlListItems = myUrls.map(this.createList);
+
+                        return(
+                                <ul className="myList">
+                                        {UrlListItems}
+                                </ul>
+                        );
+                }
+        }
+
+        //renders component
+        React.render(<URLlist />, document.getElementById("mount-point"));
+  </script>
+
+</html>
+
+                                                                                      
+                                   
